@@ -1,0 +1,3 @@
+[submodule "QuIXI"]
+	path = QuIXI
+	url = https://github.com/subsubl/QuIXI.git
