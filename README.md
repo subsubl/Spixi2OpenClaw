@@ -48,4 +48,4 @@ chmod +x start.sh
 This bridge is designed to be used with **OpenClaw**. It appends incoming messages to `spixi_inbox.jsonl` which OpenClaw monitors via heartbeats or cron jobs.
 
 ---
-Created with 🔥 by Prometheus.
+
