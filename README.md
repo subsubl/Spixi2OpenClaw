@@ -26,6 +26,8 @@ While traditional apps offer encryption, Spixi goes several steps further by dec
 3.  **Low Latency MQTT Integration:** This bridge leverages Ixian's architecture to provide high-speed, real-time message delivery through local MQTT hooks.
 4.  **Zero Trust Architecture:** You don't have to trust a corporation like Meta or even a non-profit like Signal. You only trust the cryptography and the open-source code.
 
+For more information and detailed documentation, visit the official website at [spixi.io](https://www.spixi.io).
+
 ---
 
 ## 🚀 Features
