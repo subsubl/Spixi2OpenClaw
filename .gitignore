@@ -5,3 +5,5 @@ bin/
 obj/
 quixi_run.log
 spixi_inbox.jsonl
+config.json
+.env

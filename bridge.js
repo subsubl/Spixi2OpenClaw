@@ -3,9 +3,27 @@ const http = require('http');
 const fs = require('fs');
 const { exec } = require('child_process');
 
-const MQTT_HOST = '127.0.0.1';
-const MQTT_PORT = 1884;
-const QUIXI_API_URL = 'http://localhost:8001';
+// Load config
+let config = {
+    mqttHost: '127.0.0.1',
+    mqttPort: 1884,
+    quixiApiUrl: 'http://localhost:8001',
+    myWalletAddress: '',
+    openclawRecipient: ''
+};
+
+if (fs.existsSync('config.json')) {
+    try {
+        const fileConfig = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+        config = { ...config, ...fileConfig };
+    } catch (e) {
+        console.error('[BRIDGE] Error parsing config.json:', e.message);
+    }
+}
+
+const MQTT_HOST = config.mqttHost;
+const MQTT_PORT = config.mqttPort;
+const QUIXI_API_URL = config.quixiApiUrl;
 
 const processedIds = new Set();
 
@@ -52,9 +70,10 @@ async function pollSpixi() {
 }
 
 function triggerOpenClaw() {
+    if (!config.openclawRecipient) return;
     // Trigger an agent turn to process the inbox
     // Using --thinking off to save tokens/time for the wakeup
-    exec('openclaw agent --to +38670181210 --message "SPIXI_SIGNAL" --thinking off', (error, stdout, stderr) => {
+    exec(`openclaw agent --to ${config.openclawRecipient} --message "SPIXI_SIGNAL" --thinking off`, (error, stdout, stderr) => {
         if (error) {
             console.error(`[BRIDGE] OpenClaw trigger error: ${error.message}`);
             return;
@@ -72,7 +91,7 @@ function handleIncoming(data, source) {
     const text = data.data ? data.data.data : data.message;
     
     if (!text) return;
-    if (sender === '3kodpQH2o1pGGZJx9bRvsUYXSX6K8nMTSzfTJQsS8zzTR3LkbRCXLXZknHgh2hZQm') return;
+    if (config.myWalletAddress && sender === config.myWalletAddress) return;
 
     console.log(`[BRIDGE] [${source}] Message from ${sender}: ${text}`);
     

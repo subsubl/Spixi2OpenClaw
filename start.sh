@@ -18,7 +18,9 @@ sleep 5
 
 # Start QuIXI
 cd QuIXI
-$DOTNET_BIN run --project QuIXI -- --walletPassword Halalati1106 --clean > quixi_run.log 2>&1 &
+# Load password from config.json if available
+WALLET_PWD=$(node -e "try { console.log(require('../config.json').walletPassword || 'Halalati1106'); } catch(e) { console.log('Halalati1106'); }")
+$DOTNET_BIN run --project QuIXI -- --walletPassword "$WALLET_PWD" --clean > quixi_run.log 2>&1 &
 echo $! > quixi.pid
 cd ..
 

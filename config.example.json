@@ -1,0 +1,8 @@
+{
+  "walletPassword": "YOUR_WALLET_PASSWORD",
+  "myWalletAddress": "YOUR_IXIAN_WALLET_ADDRESS",
+  "openclawRecipient": "YOUR_PHONE_NUMBER_E164",
+  "mqttHost": "127.0.0.1",
+  "mqttPort": 1884,
+  "quixiApiUrl": "http://localhost:8001"
+}
