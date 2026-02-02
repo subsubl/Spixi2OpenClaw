@@ -1,6 +1,7 @@
 const mqtt = require('mqtt');
 const http = require('http');
 const fs = require('fs');
+const { exec } = require('child_process');
 
 const MQTT_HOST = '127.0.0.1';
 const MQTT_PORT = 1884;
@@ -40,7 +41,7 @@ async function pollSpixi() {
                         if (m.localSender || m.read) return;
                         handleIncoming({ sender: friend.walletAddress.base58Address, data: { data: m.message }, id: m.id }, 'POLL');
                     });
-                    // Mark as read (will add this endpoint to QuIXI API)
+                    // Mark as read
                     await apiGet(`/markMessagesRead?address=${encodeURIComponent(friend.walletAddress.base58Address)}`);
                 }
             }
@@ -48,6 +49,18 @@ async function pollSpixi() {
     } catch (e) {
         console.error('[BRIDGE] Polling error:', e.message);
     }
+}
+
+function triggerOpenClaw() {
+    // Trigger an agent turn to process the inbox
+    // Using --thinking off to save tokens/time for the wakeup
+    exec('openclaw agent --to +38670181210 --message "SPIXI_SIGNAL" --thinking off', (error, stdout, stderr) => {
+        if (error) {
+            console.error(`[BRIDGE] OpenClaw trigger error: ${error.message}`);
+            return;
+        }
+        console.log('[BRIDGE] OpenClaw triggered');
+    });
 }
 
 function handleIncoming(data, source) {
@@ -72,6 +85,9 @@ function handleIncoming(data, source) {
     });
     
     fs.appendFileSync('spixi_inbox.jsonl', logEntry + '\n');
+    
+    // Trigger OpenClaw
+    triggerOpenClaw();
 }
 
 function handleContactRequest(data) {
